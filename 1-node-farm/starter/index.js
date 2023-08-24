@@ -1,11 +1,16 @@
 // calling the file system module, this will allow us to manage files from our system.
 const fs = require('fs');
+// calling http server module.
+const http = require('http');
+const url = require('url');
 
+// ----------------------------------------------------------------
+// FILES
 // ----------------------------------------------------------------
 // Reading and writing files from the filesystem
 // Bad / Synchronous - first file system is required, the the file is read and the log to the console,
 // each line of code waits for the previous line to be processed before continuing. This can be BLOCKING
-// 
+//
 // offload working to the background to be worked on
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -16,7 +21,7 @@ const fs = require('fs');
 // fs.writeFileSync('./txt/output.txt', textOut, 'utf8');
 // console.log('Successfully wrote to the file');
 // ----------------------------------------------------------------
-// SOLUTION is to write Asynchronous code :) 
+// SOLUTION is to write Asynchronous code :)
 // ----------------------------------------------------------------
 // fs.readFile('./txt/input.txt', 'utf-8', (err, data) => {
 //     console.log(data);
@@ -37,17 +42,52 @@ const fs = require('fs');
 // });
 // console.log('Will read file!');
 // ----------------------------------------------------------------
-fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
-    if (err) return console.log('ERROR!')
-    fs.readFile(`./txt/${data1}.txt`, 'utf-8', (err, data2) => {
-        console.log(data2);
-        fs.readFile('./txt/append.txt', 'utf-8', (err, data3) => {
-            console.log(data3);
-            // Writing data to file...
-            fs.writeFileSync('./txt/final.txt', `${data2}\n${data3}`, 'utf-8', err=> {
-                console.log('Your file has been written successfully');
-            })
-        });
-    });
+// fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
+//     if (err) return console.log('ERROR!')
+//     fs.readFile(`./txt/${data1}.txt`, 'utf-8', (err, data2) => {
+//         console.log(data2);
+//         fs.readFile('./txt/append.txt', 'utf-8', (err, data3) => {
+//             console.log(data3);
+//             // Writing data to file...
+//             fs.writeFileSync('./txt/final.txt', `${data2}\n${data3}`, 'utf-8', err=> {
+//                 console.log('Your file has been written successfully');
+//             })
+//         });
+//     });
+// });
+// console.log('Will read file!');
+// ----------------------------------------------------------------
+// SERVER
+// ----------------------------------------------------------------
+
+fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
+  const productData = JSON.parse(data);
 });
-console.log('Will read file!');
+
+const server = http.createServer((req, res) => {
+  const pathName = req.url;
+
+  if (pathName === '/' || pathName === '/overview') {
+    res.end('This is the Overview page');
+  } else if (pathName === '/product') {
+    res.end('This is the Product page');
+  } else if (pathName === '/api') {
+    // Read data from dev data amd parse the json into javascript.
+    fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
+      const productData = JSON.parse(data);
+      // letting the browser know we are returning json data
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(data); // sending back the json string
+    });
+  } else {
+    res.writeHead(404, {
+      'Content-Type': 'text/html',
+      'BRow-Header': 'CG',
+    });
+    res.end('<h1>Page not found!</h1>');
+  }
+});
+
+server.listen(8000, '127.0.0.1', () => {
+  console.log('Listening to requests on port 8000');
+});
