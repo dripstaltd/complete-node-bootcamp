@@ -59,11 +59,12 @@ const url = require('url');
 // ----------------------------------------------------------------
 // SERVER
 // ----------------------------------------------------------------
+// before server starts up it will read the file and return the json file as data
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+// Parse that into an object
+const dataObj = JSON.parse(data);
 
-fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
-  const productData = JSON.parse(data);
-});
-
+// Top Level Functions
 const server = http.createServer((req, res) => {
   const pathName = req.url;
 
@@ -72,13 +73,8 @@ const server = http.createServer((req, res) => {
   } else if (pathName === '/product') {
     res.end('This is the Product page');
   } else if (pathName === '/api') {
-    // Read data from dev data amd parse the json into javascript.
-    fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
-      const productData = JSON.parse(data);
-      // letting the browser know we are returning json data
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(data); // sending back the json string
-    });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(data);
   } else {
     res.writeHead(404, {
       'Content-Type': 'text/html',
