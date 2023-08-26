@@ -59,6 +59,7 @@ const url = require('url');
 
 /////////////////////////
 // SERVER
+// replaces template product html placeholders with data from inputed variable product. (dataObj)
 const replaceTemplate = (temp, product) => {
   let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
   output = output.replace(/{%IMAGE%}/g, product.image);
@@ -80,6 +81,7 @@ const tempCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
   'utf-8'
 );
+//reads template product html
 const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
   'utf-8'
@@ -92,10 +94,10 @@ const dataObj = JSON.parse(data);
 
 // Top Level Functions
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  const { query, pathname } = url.parse(req.url, true);
 
   // Overview page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
 
     const cardsHtml = dataObj
@@ -105,11 +107,16 @@ const server = http.createServer((req, res) => {
     res.end(output);
 
     // Product page
-  } else if (pathName === '/product') {
-    res.end('This is the Product page');
+  } else if (pathname === '/product') {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+
+    // taking the data positioned at value of query id
+    const product = dataObj[query.id];
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
 
     // API
-  } else if (pathName === '/api') {
+  } else if (pathname === '/api') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(data);
 
