@@ -3,6 +3,9 @@ const fs = require('fs');
 // calling http server module.
 const http = require('http');
 const url = require('url');
+
+const slugify = require('slugify');
+
 const replaceTemplate = require('./modules/replaceTemplate');
 
 // ----------------------------------------------------------------
@@ -80,6 +83,9 @@ const tempProduct = fs.readFileSync(
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 // Parse that into an object
 const dataObj = JSON.parse(data);
+
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
+console.log(slugs);
 
 // Top Level Functions
 const server = http.createServer((req, res) => {
