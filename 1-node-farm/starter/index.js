@@ -93,7 +93,9 @@ const server = http.createServer((req, res) => {
 
   // Overview page
   if (pathname === '/' || pathname === '/overview') {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+    });
 
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
@@ -103,7 +105,9 @@ const server = http.createServer((req, res) => {
 
     // Product page
   } else if (pathname === '/product') {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+    });
 
     // taking the data positioned at value of query id
     const product = dataObj[query.id];
@@ -112,7 +116,9 @@ const server = http.createServer((req, res) => {
 
     // API
   } else if (pathname === '/api') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+    });
     res.end(data);
 
     // Not found 404 page
