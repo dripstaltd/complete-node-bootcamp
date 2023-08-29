@@ -9,7 +9,7 @@ class Sales extends EventEmitter {
 
 const myEmitter = new Sales();
 
-// Observers
+// Observers / Event Listeners
 myEmitter.on("newSale", () => {
   console.log("There was a new sale");
 });
