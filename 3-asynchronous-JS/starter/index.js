@@ -1,0 +1,42 @@
+const fs = require('fs');
+const superagent = require('superagent');
+
+// Function that takes a file name and returns a promise that resolves/ returns the data object.
+const readFilePro = file => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (err, data) => {
+      if (err) reject('error reading file 😒');
+      // NOTE: resolve function return data that can be accessed by .then() method
+      resolve(data);
+    });
+  });
+};
+
+const writeFilePro = (file, data) => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(file, data, err => {
+      if (err) reject('error writing file😒');
+      resolve('success');
+    });
+  });
+};
+
+//NOTE: example of chaining then methods on promises
+readFilePro(`${__dirname}/dog.txt`)
+  // readFulePro returns a promise that we can use .then() to resolve
+  .then(data => {
+    console.log(`Breed: ${data}`);
+    // return promise
+    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+  })
+  .then(res => {
+    console.log(res.body.message);
+    // return promise
+    return writeFilePro('dog-img.txt', res.body.message);
+  })
+  .then(() => {
+    console.log('Random dog image saved to file successfully!😁');
+  })
+  .catch(err => {
+    console.log(err);
+  });
