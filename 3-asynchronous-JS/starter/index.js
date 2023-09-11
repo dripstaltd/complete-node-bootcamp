@@ -34,11 +34,35 @@ const getDogPic = async () => {
     await writeFilePro('dog-img.txt', res.body.message);
     console.log('Random dog image saved to file successfully!😁');
   } catch (err) {
-    console.log(err);
+    // console.log(err);
+
+    throw err;
   }
+  return '2: READY 🐕';
 };
 
-getDogPic();
+(async () => {
+  try {
+    console.log('1: Will get dogPic!');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('3: done getting dogPic!');
+  } catch (err) {
+    console.log('💀 ERROR');
+  }
+})();
+
+/*
+console.log('1: Will get dogPic!');
+getDogPic()
+  .then(x => {
+    console.log(x);
+    console.log('3: done getting dogPic!');
+  })
+  .catch(err => {
+    console.log('💀 ERROR');
+  });
+*/
 
 //NOTE: example of chaining then methods on promises
 /*
