@@ -1,20 +1,33 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
-// Middleware stands between the request and the response.
-// This middleware is responsible for adding the data to the response object and returning it.
+/*◙◙◙◙◙ MIDDLEWARE START ◙◙◙◙◙*/
+app.use(morgan('dev'));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 😊');
+  next();
+});
+// adding time stamp to the request object as requestTime
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+/*◙◙◙◙◙ MIDDLEWARE END ◙◙◙◙◙*/
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 /*◙◙◙◙◙ Start of Route Handlers ◙◙◙◙◙*/
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours,
@@ -92,22 +105,52 @@ const updateTour = (req, res) => {
     },
   });
 };
+
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
 /*◙◙◙◙◙ Route Handlers End ◙◙◙◙◙*/
-/*◙◙◙◙◙ Routes ◙◙◙◙◙*/
+const tourRouter = express.Router();
+const userRouter = express.Router();
 
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', createTour);
-// app.get('/api/v1/tours/:id', getTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+// 1) TOUR ROUTES
+tourRouter.route('/').get(getAllTours).post(createTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// 2) USER ROUTES
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 /*◙◙◙◙◙ Start Server ◙◙◙◙◙*/
 const port = 3000;
